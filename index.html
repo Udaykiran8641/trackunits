@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QA Operational Command | Advanced Traceability</title>
+    <style>
+        :root { 
+            --navy: #0f172a; --blue: #3b82f6; --emerald: #10b981; 
+            --rose: #ef4444; --slate: #f1f5f9; --glass: rgba(255, 255, 255, 0.9);
+            --border: #e2e8f0; --text-main: #1e293b;
+        }
+        body { font-family: 'Inter', system-ui, sans-serif; background-color: #cbd5e1; color: var(--text-main); margin: 0; padding: 20px; }
+        .container { max-width: 1400px; margin: auto; }
+        
+        /* Modern Header */
+        header { background: var(--navy); color: white; padding: 15px 25px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        .status-dot { height: 8px; width: 8px; background: var(--emerald); border-radius: 50%; display: inline-block; margin-right: 5px; animation: blink 2s infinite; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+
+        /* Dashboard & Layout */
+        .grid-main { display: grid; grid-template-columns: 350px 1fr; gap: 20px; }
+        .card { background: var(--glass); backdrop-filter: blur(10px); padding: 20px; border-radius: 12px; border: 1px solid white; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        
+        /* Step Analytics - Visual Update */
+        .step-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; margin-top: 15px; }
+        .step-box { background: white; padding: 12px; border-radius: 8px; text-align: center; border: 1px solid var(--border); transition: 0.2s; border-bottom: 4px solid #cbd5e1; }
+        .step-box.active { border-bottom-color: var(--blue); transform: translateY(-3px); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2); }
+        .step-box h5 { margin: 0; font-size: 10px; color: #64748b; }
+        .step-box p { margin: 5px 0; font-size: 18px; font-weight: 800; color: var(--navy); }
+
+        /* Inputs */
+        label { display: block; font-weight: 700; margin-bottom: 6px; font-size: 11px; color: #475569; text-transform: uppercase; }
+        input, select { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; background: white; }
+        .btn-log { background: var(--blue); color: white; border: none; padding: 15px; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; transition: 0.3s; }
+        .btn-log:hover { background: #2563eb; transform: scale(1.01); }
+
+        /* Custom Modal Popup */
+        #modalOverlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 1000; justify-content: center; align-items: center; }
+        .modal { background: white; padding: 30px; border-radius: 16px; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .modal h3 { margin-top: 0; color: var(--rose); }
+        .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-confirm { background: var(--rose); color: white; flex: 1; padding: 10px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-cancel { background: var(--slate); color: var(--navy); flex: 1; padding: 10px; border: none; border-radius: 6px; cursor: pointer; }
+
+        /* Table Design */
+        .table-panel { overflow-hidden; background: white; border-radius: 12px; }
+        .table-scroll { max-height: 600px; overflow-y: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f8fafc; padding: 15px; text-align: left; font-size: 11px; color: #64748b; position: sticky; top: 0; border-bottom: 1px solid var(--border); }
+        td { padding: 15px; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
+        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; }
+        .done { background: #dcfce7; color: #15803d; }
+        .testing { background: #fef9c3; color: #a16207; }
+    </style>
+</head>
+<body>
+
+<div id="modalOverlay">
+    <div class="modal">
+        <h3>Confirm Deletion</h3>
+        <p id="modalText">Are you sure you want to remove this unit?</p>
+        <div class="modal-btns">
+            <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+            <button class="btn-confirm" id="confirmDelBtn">Delete Record</button>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <header>
+        <div>
+            <h2 style="margin:0; letter-spacing: -1px;">QA Operational Command</h2>
+            <div style="font-size: 11px; margin-top: 4px;">
+                <span class="status-dot"></span> <span id="syncStatus">System Ready</span>
+            </div>
+        </div>
+        <button class="btn-log" style="width: auto; padding: 10px 20px;" onclick="downloadCSV()">Export Master CSV</button>
+    </header>
+
+    <div class="grid-main">
+        <div class="side-col">
+            <div class="card" style="margin-bottom: 20px;">
+                <label>Admin Access</label>
+                <div style="display:flex; align-items:center; gap:10px; background: #fee2e2; padding: 10px; border-radius: 8px; color: var(--rose); font-size: 11px; font-weight: bold; margin-bottom: 15px;">
+                    <input type="checkbox" id="editMode" onchange="renderUI()" style="width:20px; height:20px; margin:0;"> ENABLE DELETE MODE
+                </div>
+
+                <div id="feedback" style="margin-bottom: 15px;"></div>
+
+                <label>Active Batch</label>
+                <select id="batchDropdown" onchange="syncBatchInput()"></select>
+                <input type="text" id="batchInput" placeholder="Enter New Batch ID...">
+
+                <label>Serial Number</label>
+                <input type="text" id="snInput" placeholder="Scan Unit SN..." autofocus>
+
+                <label>Process Step</label>
+                <select id="stageSelect"></select>
+
+                <button class="btn-log" id="submitBtn" onclick="processUnit()">LOG TRANSACTION</button>
+            </div>
+
+            <div class="card">
+                <h4 style="margin:0 0 10px 0; font-size: 13px;">Batch Inventory</h4>
+                <div style="max-height: 200px; overflow-y: auto;">
+                    <table style="font-size: 11px;">
+                        <tbody id="globalSummaryTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-col">
+            <div class="card" style="margin-bottom: 20px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h4 style="margin:0;">Pipeline Analytics</h4>
+                    <select id="viewFilter" style="width:200px; margin:0;" onchange="renderUI()"></select>
+                </div>
+                <div class="step-container" id="stepAnalytics"></div>
+            </div>
+
+            <div class="card table-panel" style="padding:0;">
+                <div style="padding: 15px; border-bottom: 1px solid var(--border);">
+                    <input type="text" id="searchBar" onkeyup="filterTable()" placeholder="Quick Search Serial..." style="margin:0; padding: 8px;">
+                </div>
+                <div class="table-scroll">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Batch</th><th>Serial Number</th><th>Stage</th><th>Trail</th><th>Status</th><th id="adminHeader" style="display:none;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const APP_URL = "https://script.google.com/macros/s/AKfycbwbCuZVTiCZ2X1E4r6Zh5bN5VFD28X_yREUh54oddmI07VmTV3kBg4-_5m8Yg-uxcU/exec"; 
+    const STAGES = ["Receiving", "Programming", "Pre-Vib 1 Grp A", "Vibration 1", "Post-Vib 1 Grp A", "24h Thermal", "Post-Thermal Grp A", "Vib 2", "Post-Vib 2 Grp A", "ATP Test", "Engineering Offer"];
+
+    let db = {}; 
+    let pendingDelete = null;
+
+    window.onload = () => {
+        const stageSelect = document.getElementById('stageSelect');
+        STAGES.forEach((s, i) => stageSelect.add(new Option(`${(i+1).toString().padStart(2,'0')}. ${s}`, i)));
+        
+        if(APP_URL.includes("exec")) {
+            refreshData();
+            setInterval(refreshData, 30000);
+        } else {
+            db = JSON.parse(localStorage.getItem('qa_trace_db')) || {};
+            renderUI();
+        }
+    };
+
+    // OPTIMISTIC UPDATE: Move instantly, sync in background
+    async function processUnit() {
+        const batch = document.getElementById('batchInput').value.trim().toUpperCase();
+        const sn = document.getElementById('snInput').value.trim().toUpperCase();
+        const stageIdx = parseInt(document.getElementById('stageSelect').value);
+        const isEdit = document.getElementById('editMode').checked;
+
+        if(!batch || !sn) return showMsg("Missing Data", "error");
+
+        const key = `${batch}_${sn}`;
+        const currentData = db[key];
+        
+        // Sequence check
+        if (!isEdit) {
+            let lastIdx = currentData ? STAGES.indexOf(currentData.stage) : -1;
+            if (lastIdx === -1 && stageIdx !== 0) return showMsg("Must start at Receiving", "error");
+            if (lastIdx !== -1 && stageIdx !== lastIdx + 1) return showMsg(`Expected: ${STAGES[lastIdx+1]}`, "error");
+        }
+
+        // 1. UPDATE LOCALLY IMMEDIATELY (Optimistic)
+        let newHistory = (currentData && !isEdit) ? currentData.history + " → " + STAGES[stageIdx] : STAGES[stageIdx];
+        if(isEdit) newHistory += " (Edit)";
+
+        db[key] = {
+            batch, sn, stage: STAGES[stageIdx], 
+            history: newHistory, status: stageIdx === 10 ? "Done" : "Testing", 
+            time: new Date().toLocaleString()
+        };
+        renderUI(); 
+        showMsg("Local Update OK - Syncing...", "success");
+
+        // 2. SYNC WITH GOOGLE IN BACKGROUND
+        const payload = { ...db[key], action: "UPDATE" };
+        fetch(APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) })
+            .catch(() => showMsg("Sync Failed! Check connection.", "error"));
+
+        document.getElementById('snInput').value = "";
+        document.getElementById('snInput').focus();
+    }
+
+    // MODAL FUNCTIONS
+    function deleteUnit(batch, sn) {
+        pendingDelete = { batch, sn };
+        document.getElementById('modalText').innerText = `Permanently remove Serial ${sn} from Batch ${batch}?`;
+        document.getElementById('modalOverlay').style.display = 'flex';
+        document.getElementById('confirmDelBtn').onclick = confirmDelete;
+    }
+
+    function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
+
+    function confirmDelete() {
+        const { batch, sn } = pendingDelete;
+        const key = `${batch}_${sn}`;
+        
+        // Optimistic Delete
+        delete db[key];
+        renderUI();
+        closeModal();
+        showMsg("Record Removed", "success");
+
+        // Background Sync
+        fetch(APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ batch, sn, action: "DELETE" }) });
+    }
+
+    async function refreshData() {
+        try {
+            const res = await fetch(APP_URL);
+            const cloudData = await res.json();
+            db = {};
+            for (let i = 1; i < cloudData.length; i++) {
+                const r = cloudData[i];
+                db[`${r[0]}_${r[1]}`] = { batch: r[0], sn: r[1], stage: r[2], history: r[3], status: r[4], time: r[5] };
+            }
+            renderUI();
+            document.getElementById('syncStatus').innerText = "Live: " + new Date().toLocaleTimeString();
+        } catch (e) { document.getElementById('syncStatus').innerText = "Sync Offline"; }
+    }
+
+    function renderUI() {
+        const filter = document.getElementById('viewFilter').value || "ALL";
+        const isAdmin = document.getElementById('editMode').checked;
+        const logBody = document.getElementById('logTableBody');
+        const summaryBody = document.getElementById('globalSummaryTable');
+        
+        document.getElementById('adminHeader').style.display = isAdmin ? 'table-cell' : 'none';
+        logBody.innerHTML = ""; summaryBody.innerHTML = "";
+        
+        let batchCounts = {}; let stageCounts = new Array(STAGES.length).fill(0);
+        let batches = new Set();
+
+        Object.values(db).reverse().forEach(u => {
+            batches.add(u.batch);
+            batchCounts[u.batch] = (batchCounts[u.batch] || 0) + 1;
+            if (filter === "ALL" || u.batch === filter) {
+                if (filter !== "ALL") stageCounts[STAGES.indexOf(u.stage)]++;
+                let row = `<tr><td><b>${u.batch}</b></td><td>${u.sn}</td><td><span style="color:var(--blue);font-weight:700;">${u.stage}</span></td>
+                    <td><small>${u.history}</small></td><td><span class="status-badge ${u.status.toLowerCase()}">${u.status}</span></td>`;
+                if (isAdmin) row += `<td><button onclick="deleteUnit('${u.batch}', '${u.sn}')" style="background:var(--rose);color:white;border:none;padding:5px 10px;border-radius:6px;cursor:pointer;">DEL</button></td>`;
+                logBody.innerHTML += row + `</tr>`;
+            }
+        });
+
+        // Update dropdowns
+        const vF = document.getElementById('viewFilter'); const bD = document.getElementById('batchDropdown');
+        const prevV = vF.value; vF.innerHTML = '<option value="ALL">All Batches</option>';
+        bD.innerHTML = '<option value="">-- Select Existing --</option>';
+        Array.from(batches).sort().forEach(b => {
+            vF.add(new Option(b, b)); bD.add(new Option(b, b));
+            summaryBody.innerHTML += `<tr><td style="padding:5px;">${b}</td><td style="text-align:right;">${batchCounts[b]} Units</td></tr>`;
+        });
+        vF.value = prevV || "ALL";
+
+        // Steps
+        const sC = document.getElementById('stepAnalytics');
+        sC.innerHTML = (filter === "ALL") ? "" : STAGES.map((s, i) => `<div class="step-box ${stageCounts[i]>0?'active':''}"><h5>STEP ${i+1}</h5><p>${stageCounts[i]}</p><div style="font-size:8px;color:gray;">${s}</div></div>`).join('');
+    }
+
+    function syncBatchInput() { document.getElementById('batchInput').value = document.getElementById('batchDropdown').value; }
+    function showMsg(t, type) {
+        const f = document.getElementById('feedback'); f.innerText = t; f.style.display = "block";
+        f.style.background = type === "success" ? "#dcfce7" : "#fee2e2"; f.style.color = type === "success" ? "#166534" : "#b91c1c";
+        setTimeout(() => f.style.display = "none", 3000);
+    }
+    function filterTable() {
+        const val = document.getElementById('searchBar').value.toUpperCase();
+        const rows = document.getElementById('logTableBody').getElementsByTagName('tr');
+        for (let r of rows) r.style.display = r.innerText.toUpperCase().includes(val) ? "" : "none";
+    }
+    function downloadCSV() {
+        let csv = "Batch,SN,Stage,History,Status,Time\n";
+        Object.values(db).forEach(u => csv += `"${u.batch}","${u.sn}","${u.stage}","${u.history}","${u.status}","${u.time}"\n`);
+        const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+        a.download = `QA_Master_${new Date().toISOString().split('T')[0]}.csv`; a.click();
+    }
+</script>
+</body>
+</html>
