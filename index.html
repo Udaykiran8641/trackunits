@@ -3,132 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QA Operational Command | Advanced Traceability</title>
+    <title>QC TRACKING PAGE | Precision Traceability</title>
     <style>
         :root { 
-            --navy: #0f172a; --blue: #3b82f6; --emerald: #10b981; 
-            --rose: #ef4444; --slate: #f1f5f9; --glass: rgba(255, 255, 255, 0.9);
-            --border: #e2e8f0; --text-main: #1e293b;
+            --bg: #0f172a; --card-bg: #ffffff; --header-bg: #1e293b;
+            --blue: #2563eb; --emerald: #10b981; --rose: #e11d48; 
+            --slate: #f8fafc; --border: #cbd5e1; --text-main: #334155;
         }
-        body { font-family: 'Inter', system-ui, sans-serif; background-color: #cbd5e1; color: var(--text-main); margin: 0; padding: 20px; }
-        .container { max-width: 1400px; margin: auto; }
+        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background-color: var(--bg); color: var(--text-main); margin: 0; padding: 20px; }
+        .container { max-width: 1600px; margin: auto; }
         
-        /* Modern Header */
-        header { background: var(--navy); color: white; padding: 15px 25px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
-        .status-dot { height: 8px; width: 8px; background: var(--emerald); border-radius: 50%; display: inline-block; margin-right: 5px; animation: blink 2s infinite; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        /* Header */
+        header { background: var(--header-bg); color: white; padding: 20px 30px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); }
+        .header-actions { display: flex; align-items: center; gap: 20px; }
+        .admin-lock { font-size: 11px; padding: 8px 15px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; gap: 10px; cursor: pointer; transition: 0.3s; }
 
-        /* Dashboard & Layout */
-        .grid-main { display: grid; grid-template-columns: 350px 1fr; gap: 20px; }
-        .card { background: var(--glass); backdrop-filter: blur(10px); padding: 20px; border-radius: 12px; border: 1px solid white; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        /* Grid Layout */
+        .grid-main { display: grid; grid-template-columns: 380px 1fr; gap: 25px; }
+        .card { background: var(--card-bg); padding: 25px; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 20px; }
         
-        /* Step Analytics - Visual Update */
+        /* Pipeline Analysis UI */
         .step-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; margin-top: 15px; }
-        .step-box { background: white; padding: 12px; border-radius: 8px; text-align: center; border: 1px solid var(--border); transition: 0.2s; border-bottom: 4px solid #cbd5e1; }
-        .step-box.active { border-bottom-color: var(--blue); transform: translateY(-3px); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2); }
-        .step-box h5 { margin: 0; font-size: 10px; color: #64748b; }
-        .step-box p { margin: 5px 0; font-size: 18px; font-weight: 800; color: var(--navy); }
+        .step-box { background: var(--slate); padding: 12px; border-radius: 10px; text-align: center; border: 1px solid var(--border); transition: 0.2s; }
+        .step-box.active { border-color: var(--blue); background: white; border-bottom: 4px solid var(--blue); }
+        .step-box h5 { margin: 0; font-size: 9px; color: #64748b; text-transform: uppercase; }
+        .step-box p { margin: 5px 0; font-size: 20px; font-weight: 800; color: #1e293b; }
 
-        /* Inputs */
+        /* Forms */
         label { display: block; font-weight: 700; margin-bottom: 6px; font-size: 11px; color: #475569; text-transform: uppercase; }
-        input, select { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; background: white; }
-        .btn-log { background: var(--blue); color: white; border: none; padding: 15px; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; transition: 0.3s; }
-        .btn-log:hover { background: #2563eb; transform: scale(1.01); }
+        input, select, textarea { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; box-sizing: border-box; background: #fff; }
+        
+        .btn-log { background: var(--blue); color: white; border: none; padding: 14px; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; transition: 0.2s; text-transform: uppercase; }
+        .btn-export { background: var(--emerald); border: none; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        .btn-bulk { background: #334155; margin-top: 10px; display: none; border: 1px solid var(--blue); color: #60a5fa; }
+        .btn-del { background: var(--rose); color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; }
 
-        /* Custom Modal Popup */
-        #modalOverlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 1000; justify-content: center; align-items: center; }
-        .modal { background: white; padding: 30px; border-radius: 16px; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-        .modal h3 { margin-top: 0; color: var(--rose); }
-        .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
-        .btn-confirm { background: var(--rose); color: white; flex: 1; padding: 10px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        .btn-cancel { background: var(--slate); color: var(--navy); flex: 1; padding: 10px; border: none; border-radius: 6px; cursor: pointer; }
+        /* Table */
+        .table-panel { padding: 0; overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        th { background: #f1f5f9; padding: 15px; text-align: left; font-size: 11px; color: #475569; text-transform: uppercase; position: sticky; top: 0; z-index: 5; }
+        td { padding: 15px; border-bottom: 1px solid #e2e8f0; font-size: 13px; color: #1e293b; word-wrap: break-word; }
+        
+        #searchBar { background: #f8fafc; border: 2px solid var(--border); font-weight: 600; font-size: 15px; }
 
-        /* Table Design */
-        .table-panel { overflow-hidden; background: white; border-radius: 12px; }
-        .table-scroll { max-height: 600px; overflow-y: auto; }
-        table { width: 100%; border-collapse: collapse; }
-        th { background: #f8fafc; padding: 15px; text-align: left; font-size: 11px; color: #64748b; position: sticky; top: 0; border-bottom: 1px solid var(--border); }
-        td { padding: 15px; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
-        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; }
+        .status-badge { padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 800; }
         .done { background: #dcfce7; color: #15803d; }
         .testing { background: #fef9c3; color: #a16207; }
+        .problem-tag { background: #fee2e2; color: #b91c1c; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-top: 6px; display: inline-block; border: 1px solid #fecdd3; }
+        .history-text { color: #64748b; font-size: 11px; line-height: 1.4; }
     </style>
 </head>
 <body>
 
-<div id="modalOverlay">
-    <div class="modal">
-        <h3>Confirm Deletion</h3>
-        <p id="modalText">Are you sure you want to remove this unit?</p>
-        <div class="modal-btns">
-            <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-            <button class="btn-confirm" id="confirmDelBtn">Delete Record</button>
-        </div>
-    </div>
-</div>
-
 <div class="container">
     <header>
         <div>
-            <h2 style="margin:0; letter-spacing: -1px;">QA Operational Command</h2>
-            <div style="font-size: 11px; margin-top: 4px;">
-                <span class="status-dot"></span> <span id="syncStatus">System Ready</span>
+            <h2 style="margin:0; letter-spacing: -0.5px; font-weight: 800;">QC TRACKING PAGE</h2>
+            <div id="syncStatus" style="font-size: 11px; margin-top: 4px; color: var(--emerald); font-weight: bold;">CONNECTING TO GOOGLE SHEETS...</div>
+        </div>
+        <div class="header-actions">
+            <button class="btn-export" onclick="downloadCSV()">EXPORT TO CSV</button>
+            <div class="admin-lock">
+                <input type="checkbox" id="adminToggle" onchange="toggleAdminMode()" style="cursor:pointer;">
+                <span id="lockText">ADMIN LOCKED</span>
             </div>
         </div>
-        <button class="btn-log" style="width: auto; padding: 10px 20px;" onclick="downloadCSV()">Export Master CSV</button>
     </header>
 
     <div class="grid-main">
         <div class="side-col">
-            <div class="card" style="margin-bottom: 20px;">
-                <label>Admin Access</label>
-                <div style="display:flex; align-items:center; gap:10px; background: #fee2e2; padding: 10px; border-radius: 8px; color: var(--rose); font-size: 11px; font-weight: bold; margin-bottom: 15px;">
-                    <input type="checkbox" id="editMode" onchange="renderUI()" style="width:20px; height:20px; margin:0;"> ENABLE DELETE MODE
-                </div>
-
-                <div id="feedback" style="margin-bottom: 15px;"></div>
-
-                <label>Active Batch</label>
+            <div class="card">
+                <div id="feedback" style="display:none; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 12px; text-align:center;"></div>
+                
+                <label>Current Batch</label>
                 <select id="batchDropdown" onchange="syncBatchInput()"></select>
-                <input type="text" id="batchInput" placeholder="Enter New Batch ID...">
-
-                <label>Serial Number</label>
+                <input type="text" id="batchInput" placeholder="New Batch ID...">
+                
+                <label>Unit Serial Number</label>
                 <input type="text" id="snInput" placeholder="Scan Unit SN..." autofocus>
-
-                <label>Process Step</label>
+                
+                <label>Completed Stage</label>
                 <select id="stageSelect"></select>
 
-                <button class="btn-log" id="submitBtn" onclick="processUnit()">LOG TRANSACTION</button>
+                <label>Quality Remarks</label>
+                <textarea id="remarkInput" rows="2" placeholder="Note issues here..."></textarea>
+
+                <button class="btn-log" onclick="processUnit()">LOG TRANSACTION</button>
+                <button class="btn-log btn-bulk" id="bulkMoveBtn" onclick="processBulk()">BULK MOVE SELECTED</button>
             </div>
 
-            <div class="card">
-                <h4 style="margin:0 0 10px 0; font-size: 13px;">Batch Inventory</h4>
-                <div style="max-height: 200px; overflow-y: auto;">
-                    <table style="font-size: 11px;">
-                        <tbody id="globalSummaryTable"></tbody>
-                    </table>
+            <div class="card" style="background: #f1f5f9; border: none;">
+                <label style="color: #1e293b;">Batch Inventory</label>
+                <div style="max-height: 180px; overflow-y: auto;">
+                    <table style="font-size: 11px; color: #1e293b; table-layout: auto;"><tbody id="summaryTable"></tbody></table>
                 </div>
             </div>
         </div>
 
         <div class="main-col">
-            <div class="card" style="margin-bottom: 20px;">
+            <div class="card" style="padding: 15px 25px;">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h4 style="margin:0;">Pipeline Analytics</h4>
+                    <h4 style="margin:0; font-size: 14px; text-transform: uppercase; color: #1e293b;">Process Pipeline Analytics</h4>
                     <select id="viewFilter" style="width:200px; margin:0;" onchange="renderUI()"></select>
                 </div>
                 <div class="step-container" id="stepAnalytics"></div>
             </div>
 
-            <div class="card table-panel" style="padding:0;">
-                <div style="padding: 15px; border-bottom: 1px solid var(--border);">
-                    <input type="text" id="searchBar" onkeyup="filterTable()" placeholder="Quick Search Serial..." style="margin:0; padding: 8px;">
+            <div class="card table-panel">
+                <div style="padding:15px; border-bottom:1px solid var(--border); display:flex; gap:15px; align-items:center; background: #fff;">
+                    <div id="selectAllContainer" style="display:none;">
+                        <input type="checkbox" id="selectAll" onclick="toggleSelectAll()" style="width:18px; height:18px; cursor:pointer;">
+                    </div>
+                    <input type="text" id="searchBar" oninput="filterTable()" placeholder="FAST SEARCH: Type Batch, Serial, or Remarks..." style="margin:0; padding:15px;">
                 </div>
-                <div class="table-scroll">
-                    <table>
+                <div style="max-height: 600px; overflow-y: auto;">
+                    <table id="mainTable">
                         <thead>
                             <tr>
-                                <th>Batch</th><th>Serial Number</th><th>Stage</th><th>Trail</th><th>Status</th><th id="adminHeader" style="display:none;">Action</th>
+                                <th id="selectHeader" style="display:none;" width="40"></th>
+                                <th width="120">Batch</th>
+                                <th width="150">Serial</th>
+                                <th width="180">Completed Stage</th>
+                                <th>Full History</th>
+                                <th width="100">Status</th>
+                                <th id="adminHeader" style="display:none;" width="100">Action</th>
                             </tr>
                         </thead>
                         <tbody id="logTableBody"></tbody>
@@ -140,158 +138,254 @@
 </div>
 
 <script>
+    // --- GOOGLE SHEET CONFIGURATION ---
     const APP_URL = "https://script.google.com/macros/s/AKfycbwbCuZVTiCZ2X1E4r6Zh5bN5VFD28X_yREUh54oddmI07VmTV3kBg4-_5m8Yg-uxcU/exec"; 
-    const STAGES = ["Receiving", "Programming", "Pre-Vib 1 Grp A", "Vibration 1", "Post-Vib 1 Grp A", "24h Thermal", "Post-Thermal Grp A", "Vib 2", "Post-Vib 2 Grp A", "ATP Test", "Engineering Offer"];
-
-    let db = {}; 
-    let pendingDelete = null;
+    
+    const STAGES = [
+        "QC Received", "Programming", "Pre-Vib 1 Grp A", "Vibration 1", 
+        "Post-Vib 1 Grp A", "24h Thermal", "Post-Thermal Grp A", "Vib 2", 
+        "Post-Vib 2 Grp A", "ATP Test", "Engineering Offered", "Packed", "Dispatched"
+    ];
+    const ADMIN_PASS = "1947";
+    
+    let db = {};
+    let isAdmin = false;
 
     window.onload = () => {
         const stageSelect = document.getElementById('stageSelect');
         STAGES.forEach((s, i) => stageSelect.add(new Option(`${(i+1).toString().padStart(2,'0')}. ${s}`, i)));
         
-        if(APP_URL.includes("exec")) {
-            refreshData();
-            setInterval(refreshData, 30000);
-        } else {
-            db = JSON.parse(localStorage.getItem('qa_trace_db')) || {};
-            renderUI();
-        }
-    };
-
-    // OPTIMISTIC UPDATE: Move instantly, sync in background
-    async function processUnit() {
-        const batch = document.getElementById('batchInput').value.trim().toUpperCase();
-        const sn = document.getElementById('snInput').value.trim().toUpperCase();
-        const stageIdx = parseInt(document.getElementById('stageSelect').value);
-        const isEdit = document.getElementById('editMode').checked;
-
-        if(!batch || !sn) return showMsg("Missing Data", "error");
-
-        const key = `${batch}_${sn}`;
-        const currentData = db[key];
-        
-        // Sequence check
-        if (!isEdit) {
-            let lastIdx = currentData ? STAGES.indexOf(currentData.stage) : -1;
-            if (lastIdx === -1 && stageIdx !== 0) return showMsg("Must start at Receiving", "error");
-            if (lastIdx !== -1 && stageIdx !== lastIdx + 1) return showMsg(`Expected: ${STAGES[lastIdx+1]}`, "error");
-        }
-
-        // 1. UPDATE LOCALLY IMMEDIATELY (Optimistic)
-        let newHistory = (currentData && !isEdit) ? currentData.history + " → " + STAGES[stageIdx] : STAGES[stageIdx];
-        if(isEdit) newHistory += " (Edit)";
-
-        db[key] = {
-            batch, sn, stage: STAGES[stageIdx], 
-            history: newHistory, status: stageIdx === 10 ? "Done" : "Testing", 
-            time: new Date().toLocaleString()
-        };
-        renderUI(); 
-        showMsg("Local Update OK - Syncing...", "success");
-
-        // 2. SYNC WITH GOOGLE IN BACKGROUND
-        const payload = { ...db[key], action: "UPDATE" };
-        fetch(APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) })
-            .catch(() => showMsg("Sync Failed! Check connection.", "error"));
-
-        document.getElementById('snInput').value = "";
-        document.getElementById('snInput').focus();
-    }
-
-    // MODAL FUNCTIONS
-    function deleteUnit(batch, sn) {
-        pendingDelete = { batch, sn };
-        document.getElementById('modalText').innerText = `Permanently remove Serial ${sn} from Batch ${batch}?`;
-        document.getElementById('modalOverlay').style.display = 'flex';
-        document.getElementById('confirmDelBtn').onclick = confirmDelete;
-    }
-
-    function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
-
-    function confirmDelete() {
-        const { batch, sn } = pendingDelete;
-        const key = `${batch}_${sn}`;
-        
-        // Optimistic Delete
-        delete db[key];
+        // Load local cache first for instant UI
+        db = JSON.parse(localStorage.getItem('qa_v9_db')) || {};
         renderUI();
-        closeModal();
-        showMsg("Record Removed", "success");
-
-        // Background Sync
-        fetch(APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ batch, sn, action: "DELETE" }) });
-    }
+        
+        // Fetch latest from Google Sheets
+        refreshData();
+    };
 
     async function refreshData() {
         try {
             const res = await fetch(APP_URL);
             const cloudData = await res.json();
             db = {};
+            // Start from 1 to skip header row
             for (let i = 1; i < cloudData.length; i++) {
                 const r = cloudData[i];
-                db[`${r[0]}_${r[1]}`] = { batch: r[0], sn: r[1], stage: r[2], history: r[3], status: r[4], time: r[5] };
+                db[`${r[0]}_${r[1]}`] = { batch: r[0], sn: r[1], stage: r[2], history: r[3], status: r[4], timestamp: r[5], lastRemark: r[6] || "" };
             }
+            localStorage.setItem('qa_v9_db', JSON.stringify(db));
             renderUI();
-            document.getElementById('syncStatus').innerText = "Live: " + new Date().toLocaleTimeString();
-        } catch (e) { document.getElementById('syncStatus').innerText = "Sync Offline"; }
+            document.getElementById('syncStatus').innerText = "LIVE SYNC: " + new Date().toLocaleTimeString();
+            document.getElementById('syncStatus').style.color = "var(--emerald)";
+        } catch (e) { 
+            document.getElementById('syncStatus').innerText = "SYNC OFFLINE (Local Mode)";
+            document.getElementById('syncStatus').style.color = "var(--rose)";
+        }
+    }
+
+    function toggleAdminMode() {
+        const toggle = document.getElementById('adminToggle');
+        if (toggle.checked) {
+            const pass = prompt("Verification Required:");
+            if (pass === ADMIN_PASS) {
+                isAdmin = true;
+                document.getElementById('lockText').innerText = "ADMIN: UNLOCKED";
+                document.getElementById('lockText').style.color = "var(--emerald)";
+                showMsg("Security Clearance Granted", "success");
+            } else {
+                alert("Unauthorized!");
+                toggle.checked = false;
+                isAdmin = false;
+            }
+        } else {
+            isAdmin = false;
+            document.getElementById('lockText').innerText = "ADMIN LOCKED";
+            document.getElementById('lockText').style.color = "white";
+        }
+        renderUI();
+    }
+
+    function processUnit() {
+        const batch = document.getElementById('batchInput').value.trim().toUpperCase();
+        const sn = document.getElementById('snInput').value.trim().toUpperCase();
+        const stageIdx = parseInt(document.getElementById('stageSelect').value);
+        const remark = document.getElementById('remarkInput').value.trim();
+
+        if(!batch || !sn) return showMsg("Data Required", "error");
+
+        const key = `${batch}_${sn}`;
+        const current = db[key];
+
+        if (!isAdmin) {
+            const currentStageIdx = current ? STAGES.indexOf(current.stage) : -1;
+            if (currentStageIdx === -1 && stageIdx !== 0) return showMsg("Start at Step 01", "error");
+            if (currentStageIdx !== -1 && stageIdx !== currentStageIdx + 1) {
+                return showMsg(`Next stage must be: ${STAGES[currentStageIdx + 1]}`, "error");
+            }
+        }
+
+        saveToDB(batch, sn, stageIdx, remark, false);
+        document.getElementById('snInput').value = "";
+        document.getElementById('remarkInput').value = "";
+        document.getElementById('snInput').focus();
+    }
+
+    function processBulk() {
+        const selected = document.querySelectorAll('.unit-cb:checked');
+        const stageIdx = parseInt(document.getElementById('stageSelect').value);
+        if (selected.length === 0) return alert("Select units first");
+
+        selected.forEach(cb => {
+            const [batch, sn] = cb.value.split('|');
+            saveToDB(batch, sn, stageIdx, "", true); 
+        });
+
+        showMsg(`Bulk updated ${selected.length} units`, "success");
+        document.getElementById('selectAll').checked = false;
+        toggleSelectAll();
+    }
+
+    function deleteUnit(key) {
+        if (confirm(`Confirm PERMANENT delete: ${key}?`)) {
+            const data = db[key];
+            delete db[key];
+            localStorage.setItem('qa_v9_db', JSON.stringify(db));
+            renderUI();
+            
+            // Sync delete to Google
+            fetch(APP_URL, { 
+                method: 'POST', 
+                mode: 'no-cors', 
+                body: JSON.stringify({ batch: data.batch, sn: data.sn, action: "DELETE" }) 
+            });
+        }
+    }
+
+    function saveToDB(batch, sn, stageIdx, remark, isBulk) {
+        const key = `${batch}_${sn}`;
+        const current = db[key] || { history: "" };
+        const remarkLog = (remark && !isBulk) ? ` [ISSUE: ${remark}]` : "";
+        
+        const updateData = {
+            batch, sn, 
+            stage: STAGES[stageIdx],
+            history: current.history ? current.history + " → " + STAGES[stageIdx] + remarkLog : STAGES[stageIdx] + remarkLog,
+            status: stageIdx >= 11 ? "Done" : "Testing",
+            lastRemark: isBulk ? "" : remark,
+            timestamp: new Date().toLocaleString(),
+            action: "UPDATE"
+        };
+        
+        db[key] = updateData;
+        localStorage.setItem('qa_v9_db', JSON.stringify(db));
+        renderUI();
+        showMsg("Synced to Local & Cloud", "success");
+
+        // Sync to Google Sheets
+        fetch(APP_URL, { 
+            method: 'POST', 
+            mode: 'no-cors', 
+            body: JSON.stringify(updateData) 
+        }).catch(() => showMsg("Cloud Sync Failed", "error"));
     }
 
     function renderUI() {
         const filter = document.getElementById('viewFilter').value || "ALL";
-        const isAdmin = document.getElementById('editMode').checked;
         const logBody = document.getElementById('logTableBody');
-        const summaryBody = document.getElementById('globalSummaryTable');
+        const summaryBody = document.getElementById('summaryTable');
         
-        document.getElementById('adminHeader').style.display = isAdmin ? 'table-cell' : 'none';
+        document.getElementById('bulkMoveBtn').style.display = isAdmin ? "block" : "none";
+        document.getElementById('adminHeader').style.display = isAdmin ? "table-cell" : "none";
+        document.getElementById('selectHeader').style.display = isAdmin ? "table-cell" : "none";
+        document.getElementById('selectAllContainer').style.display = isAdmin ? "block" : "none";
+        
         logBody.innerHTML = ""; summaryBody.innerHTML = "";
-        
         let batchCounts = {}; let stageCounts = new Array(STAGES.length).fill(0);
         let batches = new Set();
 
         Object.values(db).reverse().forEach(u => {
+            const key = `${u.batch}_${u.sn}`;
             batches.add(u.batch);
             batchCounts[u.batch] = (batchCounts[u.batch] || 0) + 1;
+
             if (filter === "ALL" || u.batch === filter) {
-                if (filter !== "ALL") stageCounts[STAGES.indexOf(u.stage)]++;
-                let row = `<tr><td><b>${u.batch}</b></td><td>${u.sn}</td><td><span style="color:var(--blue);font-weight:700;">${u.stage}</span></td>
-                    <td><small>${u.history}</small></td><td><span class="status-badge ${u.status.toLowerCase()}">${u.status}</span></td>`;
-                if (isAdmin) row += `<td><button onclick="deleteUnit('${u.batch}', '${u.sn}')" style="background:var(--rose);color:white;border:none;padding:5px 10px;border-radius:6px;cursor:pointer;">DEL</button></td>`;
+                stageCounts[STAGES.indexOf(u.stage)]++;
+                const remarkTag = u.lastRemark ? `<br><span class="problem-tag">⚠ ${u.lastRemark}</span>` : "";
+                
+                let row = `<tr>`;
+                if(isAdmin) row += `<td><input type="checkbox" class="unit-cb" value="${u.batch}|${u.sn}"></td>`;
+                
+                row += `
+                    <td><b>${u.batch}</b></td>
+                    <td style="font-family: monospace; font-weight: bold;">${u.sn}</td>
+                    <td style="color:var(--blue); font-weight:700;">${u.stage}</td>
+                    <td class="history-text">${u.history}${remarkTag}</td>
+                    <td><span class="status-badge ${u.status.toLowerCase()}">${u.status}</span></td>`;
+                
+                if(isAdmin) row += `<td><button class="btn-del" onclick="deleteUnit('${key}')">DELETE</button></td>`;
                 logBody.innerHTML += row + `</tr>`;
             }
         });
 
-        // Update dropdowns
         const vF = document.getElementById('viewFilter'); const bD = document.getElementById('batchDropdown');
-        const prevV = vF.value; vF.innerHTML = '<option value="ALL">All Batches</option>';
-        bD.innerHTML = '<option value="">-- Select Existing --</option>';
+        const prevV = vF.value; vF.innerHTML = '<option value="ALL">Pipeline: All Batches</option>';
+        bD.innerHTML = '<option value="">Select Existing...</option>';
         Array.from(batches).sort().forEach(b => {
             vF.add(new Option(b, b)); bD.add(new Option(b, b));
-            summaryBody.innerHTML += `<tr><td style="padding:5px;">${b}</td><td style="text-align:right;">${batchCounts[b]} Units</td></tr>`;
+            summaryBody.innerHTML += `<tr><td>${b}</td><td style="text-align:right;"><b>${batchCounts[b]}</b></td></tr>`;
         });
         vF.value = prevV || "ALL";
 
-        // Steps
         const sC = document.getElementById('stepAnalytics');
-        sC.innerHTML = (filter === "ALL") ? "" : STAGES.map((s, i) => `<div class="step-box ${stageCounts[i]>0?'active':''}"><h5>STEP ${i+1}</h5><p>${stageCounts[i]}</p><div style="font-size:8px;color:gray;">${s}</div></div>`).join('');
+        sC.innerHTML = STAGES.map((s, i) => `
+            <div class="step-box ${stageCounts[i]>0?'active':''}">
+                <h5>STEP ${i+1}</h5>
+                <p>${stageCounts[i]}</p>
+                <div style="font-size:7px; color:#64748b; font-weight: bold;">${s}</div>
+            </div>`).join('');
+            
+        filterTable(); 
+    }
+
+    function filterTable() {
+        const input = document.getElementById('searchBar');
+        const filter = input.value.toUpperCase();
+        const tbody = document.getElementById('logTableBody');
+        const rows = tbody.getElementsByTagName('tr');
+
+        for (let i = 0; i < rows.length; i++) {
+            const textContent = rows[i].textContent || rows[i].innerText;
+            rows[i].style.display = textContent.toUpperCase().indexOf(filter) > -1 ? "" : "none";
+        }
+    }
+
+    function toggleSelectAll() {
+        const checked = document.getElementById('selectAll').checked;
+        document.querySelectorAll('.unit-cb').forEach(cb => {
+            if (cb.parentElement.parentElement.style.display !== "none") {
+                cb.checked = checked;
+            }
+        });
+    }
+
+    function downloadCSV() {
+        let csv = "Batch,Serial Number,Completed Stage,History,Status,Timestamp\n";
+        Object.values(db).forEach(u => {
+            csv += `"${u.batch}","${u.sn}","${u.stage}","${u.history.replace(/"/g, '""')}","${u.status}","${u.timestamp}"\n`;
+        });
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+        a.download = `QA_Master_Report_${new Date().toISOString().slice(0,10)}.csv`;
+        a.click();
     }
 
     function syncBatchInput() { document.getElementById('batchInput').value = document.getElementById('batchDropdown').value; }
     function showMsg(t, type) {
-        const f = document.getElementById('feedback'); f.innerText = t; f.style.display = "block";
-        f.style.background = type === "success" ? "#dcfce7" : "#fee2e2"; f.style.color = type === "success" ? "#166534" : "#b91c1c";
+        const f = document.getElementById('feedback'); 
+        f.innerText = t; f.style.display = "block";
+        f.style.background = type === "success" ? "#dcfce7" : "#fee2e2"; 
+        f.style.color = type === "success" ? "#166534" : "#991b1b";
         setTimeout(() => f.style.display = "none", 3000);
-    }
-    function filterTable() {
-        const val = document.getElementById('searchBar').value.toUpperCase();
-        const rows = document.getElementById('logTableBody').getElementsByTagName('tr');
-        for (let r of rows) r.style.display = r.innerText.toUpperCase().includes(val) ? "" : "none";
-    }
-    function downloadCSV() {
-        let csv = "Batch,SN,Stage,History,Status,Time\n";
-        Object.values(db).forEach(u => csv += `"${u.batch}","${u.sn}","${u.stage}","${u.history}","${u.status}","${u.time}"\n`);
-        const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
-        a.download = `QA_Master_${new Date().toISOString().split('T')[0]}.csv`; a.click();
     }
 </script>
 </body>
