@@ -58,8 +58,9 @@
         .done { background: #dcfce7; color: #15803d; }
         .testing { background: #fef9c3; color: #a16207; }
         
-        .history-text { color: #64748b; font-size: 11px; line-height: 1.8; }
-        .history-item { display: inline-block; background: #f1f5f9; padding: 2px 8px; border-radius: 4px; margin: 2px 0; border: 1px solid #e2e8f0; }
+        .history-text { color: #64748b; font-size: 11px; line-height: 2.2; }
+        .history-item { display: inline-block; background: #f1f5f9; padding: 2px 10px; border-radius: 6px; margin: 2px 0; border: 1px solid #e2e8f0; vertical-align: middle; }
+        .history-arrow { display: inline-block; margin: 0 8px; color: #94a3b8; font-weight: bold; font-size: 14px; vertical-align: middle; }
         .history-timestamp { color: #2563eb; font-weight: bold; font-family: monospace; font-size: 10px; }
         .problem-tag { color: #e11d48; font-weight: bold; font-size: 10px; }
     </style>
@@ -112,7 +113,7 @@
                 <select id="stageSelect"></select>
 
                 <label>Quality Remarks</label>
-                <textarea id="remarkInput" rows="2" placeholder="Note issues here ...."></textarea>
+                <textarea id="remarkInput" rows="2" placeholder="Note issues here..."></textarea>
 
                 <button class="btn-log" onclick="processUnit()">LOG TRANSACTION</button>
                 <button class="btn-log btn-bulk" id="bulkMoveBtn" onclick="processBulk()">BULK MOVE SELECTED</button>
@@ -150,7 +151,7 @@
                                 <th width="100">Batch</th>
                                 <th width="120">Serial</th>
                                 <th width="150">Current Stage</th>
-                                <th>History Log (Time, Stage)</th>
+                                <th>History Progression (Time → Stage)</th>
                                 <th width="90">Status</th>
                                 <th id="adminHeader" style="display:none;" width="80">Action</th>
                             </tr>
@@ -268,23 +269,18 @@
         document.getElementById('snInput').focus();
     }
 
-    // --- UPDATED BULK PROCESS TO INCLUDE REMARKS ---
     function processBulk() {
         const selected = document.querySelectorAll('.unit-cb:checked');
         const stageIdx = parseInt(document.getElementById('stageSelect').value);
-        const remark = document.getElementById('remarkInput').value.trim(); // Capture remark for bulk
-        
+        const remark = document.getElementById('remarkInput').value.trim();
         if (selected.length === 0) return alert("Select units first");
-        
         selected.forEach(cb => {
             const [batch, sn] = cb.value.split('|');
-            saveToDB(batch, sn, stageIdx, remark, true); // Passed remark to saveToDB
+            saveToDB(batch, sn, stageIdx, remark, true); 
         });
-        
         showMsg(`Bulk updated ${selected.length} units`, "success");
-        document.getElementById('remarkInput').value = ""; // Clear remark after bulk move
-        document.getElementById('selectAll').checked = false; 
-        toggleSelectAll();
+        document.getElementById('remarkInput').value = "";
+        document.getElementById('selectAll').checked = false; toggleSelectAll();
     }
 
     function deleteUnit(key) {
@@ -300,16 +296,17 @@
         const current = db[key] || { history: "" };
         const now = new Date();
         const ts = `[${now.toLocaleDateString('en-GB')} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2, '0')}]`;
-        
-        // Logic updated: Allow remark in bulk if provided
         const remarkLog = (remark) ? ` <span class="problem-tag">(${remark})</span>` : "";
+        
+        // --- UPDATED HISTORY WITH ARROWS ---
         const entry = `<span class="history-item"><span class="history-timestamp">${ts}</span> ${STAGES[stageIdx]}${remarkLog}</span>`;
+        const arrow = `<span class="history-arrow">→</span>`;
         
         const updateData = {
             batch, sn, stage: STAGES[stageIdx],
-            history: current.history ? current.history + ", " + entry : entry,
+            history: current.history ? current.history + arrow + entry : entry,
             status: stageIdx >= 11 ? "Done" : "Testing",
-            lastRemark: remark, // Sets the remark for visibility in the analytics/table
+            lastRemark: remark,
             timestamp: now.toLocaleString(), action: "UPDATE"
         };
         db[key] = updateData; localStorage.setItem('qa_v9_db', JSON.stringify(db)); renderUI();
@@ -370,7 +367,9 @@
         let csv = "Batch,Serial Number,Completed Stage,History,Status,Timestamp\n";
         Object.values(db).forEach(u => {
             const cleanHistory = u.history.replace(/<[^>]*>?/gm, '');
-            csv += `"${u.batch}","${u.sn}","${u.stage}","${cleanHistory.replace(/"/g, '""')}","${u.status}","${u.timestamp}"\n`;
+            // Convert arrows to plain text for CSV
+            const csvHistory = cleanHistory.replace(/→/g, ' -> ');
+            csv += `"${u.batch}","${u.sn}","${u.stage}","${csvHistory.replace(/"/g, '""')}","${u.status}","${u.timestamp}"\n`;
         });
         const blob = new Blob([csv], { type: 'text/csv' });
         const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
