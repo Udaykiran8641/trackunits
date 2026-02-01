@@ -113,7 +113,7 @@
                 <select id="stageSelect"></select>
 
                 <label>Quality Remarks</label>
-                <textarea id="remarkInput" rows="2" placeholder="Note issues here..."></textarea>
+                <textarea id="remarkInput" rows="2" placeholder="Note issues here ..."></textarea>
 
                 <button class="btn-log" onclick="processUnit()">LOG TRANSACTION</button>
                 <button class="btn-log btn-bulk" id="bulkMoveBtn" onclick="processBulk()">BULK MOVE SELECTED</button>
@@ -295,10 +295,13 @@
         const key = `${batch}_${sn}`;
         const current = db[key] || { history: "" };
         const now = new Date();
+        
+        // RESTORED DATE AND TIME
         const ts = `[${now.toLocaleDateString('en-GB')} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2, '0')}]`;
+        
         const remarkLog = (remark) ? ` <span class="problem-tag">(${remark})</span>` : "";
         
-        // --- UPDATED HISTORY WITH ARROWS ---
+        // FORMATTED ENTRY WITH TIMESTAMP RESTORED
         const entry = `<span class="history-item"><span class="history-timestamp">${ts}</span> ${STAGES[stageIdx]}${remarkLog}</span>`;
         const arrow = `<span class="history-arrow">→</span>`;
         
@@ -367,7 +370,6 @@
         let csv = "Batch,Serial Number,Completed Stage,History,Status,Timestamp\n";
         Object.values(db).forEach(u => {
             const cleanHistory = u.history.replace(/<[^>]*>?/gm, '');
-            // Convert arrows to plain text for CSV
             const csvHistory = cleanHistory.replace(/→/g, ' -> ');
             csv += `"${u.batch}","${u.sn}","${u.stage}","${csvHistory.replace(/"/g, '""')}","${u.status}","${u.timestamp}"\n`;
         });
